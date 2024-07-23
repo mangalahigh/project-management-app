@@ -2,34 +2,85 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => AppProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AppProvider(),
-      child: MaterialApp(
-        title: 'Project Management App',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-        home: MainMenuScreen(),
+    return MaterialApp(
+      title: 'Project Management App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      home: MainMenuScreen(),
     );
   }
 }
 
+class Project {
+  final String name;
+  final DateTime startDate;
+  final DateTime endDate;
+  final double budget;
+
+  Project({
+    required this.name,
+    required this.startDate,
+    required this.endDate,
+    required this.budget,
+  });
+}
+
+class Task {
+  final String name;
+  final String assignedTo;
+  final String status;
+  final DateTime deadline;
+  final String priority;
+
+  Task({
+    required this.name,
+    required this.assignedTo,
+    required this.status,
+    required this.deadline,
+    required this.priority,
+  });
+}
+
+class Message {
+  final String content;
+  final String recipient;
+
+  Message({
+    required this.content,
+    required this.recipient,
+  });
+}
+
+class Report {
+  final String content;
+
+  Report({
+    required this.content,
+  });
+}
+
 class AppProvider with ChangeNotifier {
-  List<Project> _projects = [];
-  List<Task> _tasks = [];
-  List<Message> _messages = [];
+  final List<Project> _projects = [];
+  final List<Task> _tasks = [];
+  final List<Message> _messages = [];
+  final List<Report> _reports = [];
 
   List<Project> get projects => _projects;
   List<Task> get tasks => _tasks;
   List<Message> get messages => _messages;
+  List<Report> get reports => _reports;
 
   void addProject(Project project) {
     _projects.add(project);
@@ -45,49 +96,13 @@ class AppProvider with ChangeNotifier {
     _messages.add(message);
     notifyListeners();
   }
+
+  void addReport(Report report) {
+    _reports.add(report);
+    notifyListeners();
+  }
 }
 
-class Project {
-  String name;
-  DateTime startDate;
-  DateTime endDate;
-  double budget;
-
-  Project({
-    required this.name,
-    required this.startDate,
-    required this.endDate,
-    required this.budget,
-  });
-}
-
-class Task {
-  String name;
-  String assignedTo;
-  String status;
-  DateTime deadline;
-  String priority;
-
-  Task({
-    required this.name,
-    required this.assignedTo,
-    required this.status,
-    required this.deadline,
-    required this.priority,
-  });
-}
-
-class Message {
-  String content;
-  String recipient;
-
-  Message({
-    required this.content,
-    required this.recipient,
-  });
-}
-
-// Main Menu
 class MainMenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -97,56 +112,91 @@ class MainMenuScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: GridView.count(
           crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
           children: <Widget>[
-            MenuButton(
-              text: 'Manage Projects',
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: EdgeInsets.all(20),
+              ),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ManageProjectsScreen()),
                 );
               },
+              child: Text('Manage Projects'),
             ),
-            MenuButton(
-              text: 'Manage Tasks',
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: EdgeInsets.all(20),
+              ),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ManageTasksScreen()),
                 );
               },
+              child: Text('Manage Tasks'),
             ),
-            MenuButton(
-              text: 'View Project Timeline',
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: EdgeInsets.all(20),
+              ),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ViewTimelineScreen()),
                 );
               },
+              child: Text('View Project Timeline'),
             ),
-            MenuButton(
-              text: 'Communicate with Team',
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: EdgeInsets.all(20),
+              ),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => CommunicateScreen()),
                 );
               },
+              child: Text('Communicate with Team'),
             ),
-            MenuButton(
-              text: 'Generate Reports',
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: EdgeInsets.all(20),
+              ),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => GenerateReportsScreen()),
                 );
               },
+              child: Text('Generate Reports'),
             ),
           ],
         ),
@@ -155,40 +205,8 @@ class MainMenuScreen extends StatelessWidget {
   }
 }
 
-// Menu Button Widget
-class MenuButton extends StatelessWidget {
-  final String text;
-  final VoidCallback onPressed;
-
-  MenuButton({required this.text, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        primary: Colors.blueAccent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: EdgeInsets.symmetric(vertical: 20),
-        textStyle: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      onPressed: onPressed,
-      child: Text(text),
-    );
-  }
-}
-
 // Manage Projects
-class ManageProjectsScreen extends StatefulWidget {
-  @override
-  _ManageProjectsScreenState createState() => _ManageProjectsScreenState();
-}
-
-class _ManageProjectsScreenState extends State<ManageProjectsScreen> {
+class ManageProjectsScreen extends StatelessWidget {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
@@ -207,25 +225,10 @@ class _ManageProjectsScreenState extends State<ManageProjectsScreen> {
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
-            _buildTextField(
-              controller: _nameController,
-              labelText: 'Project Name',
-            ),
-            _buildTextField(
-              controller: _startDateController,
-              labelText: 'Start Date (YYYY-MM-DD)',
-              keyboardType: TextInputType.datetime,
-            ),
-            _buildTextField(
-              controller: _endDateController,
-              labelText: 'End Date (YYYY-MM-DD)',
-              keyboardType: TextInputType.datetime,
-            ),
-            _buildTextField(
-              controller: _budgetController,
-              labelText: 'Budget',
-              keyboardType: TextInputType.number,
-            ),
+            _buildTextField(controller: _nameController, labelText: 'Project Name'),
+            _buildTextField(controller: _startDateController, labelText: 'Start Date (YYYY-MM-DD)', keyboardType: TextInputType.datetime),
+            _buildTextField(controller: _endDateController, labelText: 'End Date (YYYY-MM-DD)', keyboardType: TextInputType.datetime),
+            _buildTextField(controller: _budgetController, labelText: 'Budget', keyboardType: TextInputType.number),
             SizedBox(height: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -249,7 +252,27 @@ class _ManageProjectsScreenState extends State<ManageProjectsScreen> {
                 );
 
                 appProvider.addProject(project);
-                Navigator.pop(context);
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Success'),
+                    content: Text('Project saved successfully!'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  ),
+                ).then((_) {
+                  // Clear text fields after saving
+                  _nameController.clear();
+                  _startDateController.clear();
+                  _endDateController.clear();
+                  _budgetController.clear();
+                });
               },
               child: Text('Save Project'),
             ),
@@ -265,8 +288,8 @@ class _ManageProjectsScreenState extends State<ManageProjectsScreen> {
                     child: ListTile(
                       title: Text(project.name, style: TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text(
-                        'Start: ${project.startDate}\n'
-                        'End: ${project.endDate}\n'
+                        'Start Date: ${project.startDate}\n'
+                        'End Date: ${project.endDate}\n'
                         'Budget: \$${project.budget}',
                       ),
                     ),
@@ -302,12 +325,7 @@ class _ManageProjectsScreenState extends State<ManageProjectsScreen> {
 }
 
 // Manage Tasks
-class ManageTasksScreen extends StatefulWidget {
-  @override
-  _ManageTasksScreenState createState() => _ManageTasksScreenState();
-}
-
-class _ManageTasksScreenState extends State<ManageTasksScreen> {
+class ManageTasksScreen extends StatelessWidget {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _assignedToController = TextEditingController();
   final TextEditingController _statusController = TextEditingController();
@@ -327,27 +345,11 @@ class _ManageTasksScreenState extends State<ManageTasksScreen> {
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
-            _buildTextField(
-              controller: _nameController,
-              labelText: 'Task Name',
-            ),
-            _buildTextField(
-              controller: _assignedToController,
-              labelText: 'Assigned To',
-            ),
-            _buildTextField(
-              controller: _statusController,
-              labelText: 'Status',
-            ),
-            _buildTextField(
-              controller: _deadlineController,
-              labelText: 'Deadline (YYYY-MM-DD)',
-              keyboardType: TextInputType.datetime,
-            ),
-            _buildTextField(
-              controller: _priorityController,
-              labelText: 'Priority',
-            ),
+            _buildTextField(controller: _nameController, labelText: 'Task Name'),
+            _buildTextField(controller: _assignedToController, labelText: 'Assigned To'),
+            _buildTextField(controller: _statusController, labelText: 'Status'),
+            _buildTextField(controller: _deadlineController, labelText: 'Deadline (YYYY-MM-DD)', keyboardType: TextInputType.datetime),
+            _buildTextField(controller: _priorityController, labelText: 'Priority'),
             SizedBox(height: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -373,7 +375,28 @@ class _ManageTasksScreenState extends State<ManageTasksScreen> {
                 );
 
                 appProvider.addTask(task);
-                Navigator.pop(context);
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Success'),
+                    content: Text('Task saved successfully!'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  ),
+                ).then((_) {
+                  // Clear text fields after saving
+                  _nameController.clear();
+                  _assignedToController.clear();
+                  _statusController.clear();
+                  _deadlineController.clear();
+                  _priorityController.clear();
+                });
               },
               child: Text('Save Task'),
             ),
@@ -431,7 +454,6 @@ class ViewTimelineScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appProvider = Provider.of<AppProvider>(context);
-    final projects = appProvider.projects;
 
     return Scaffold(
       appBar: AppBar(
@@ -439,19 +461,16 @@ class ViewTimelineScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: ListView.builder(
-          itemCount: projects.length,
+          itemCount: appProvider.projects.length,
           itemBuilder: (context, index) {
-            final project = projects[index];
+            final project = appProvider.projects[index];
             return Card(
               margin: EdgeInsets.symmetric(vertical: 8),
               elevation: 4,
               child: ListTile(
-                title: Text(
-                  project.name,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                title: Text(project.name, style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(
                   'Start Date: ${project.startDate}\n'
                   'End Date: ${project.endDate}\n'
@@ -467,13 +486,9 @@ class ViewTimelineScreen extends StatelessWidget {
 }
 
 // Communicate with Team
-class CommunicateScreen extends StatefulWidget {
-  @override
-  _CommunicateScreenState createState() => _CommunicateScreenState();
-}
-
-class _CommunicateScreenState extends State<CommunicateScreen> {
+class CommunicateScreen extends StatelessWidget {
   final TextEditingController _messageController = TextEditingController();
+  final TextEditingController _recipientController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -488,16 +503,8 @@ class _CommunicateScreenState extends State<CommunicateScreen> {
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
-            TextField(
-              controller: _messageController,
-              decoration: InputDecoration(
-                labelText: 'Message',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              maxLines: 3,
-            ),
+            _buildTextField(controller: _messageController, labelText: 'Message'),
+            _buildTextField(controller: _recipientController, labelText: 'Recipient'),
             SizedBox(height: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -508,13 +515,34 @@ class _CommunicateScreenState extends State<CommunicateScreen> {
                 padding: EdgeInsets.symmetric(vertical: 12),
               ),
               onPressed: () {
+                final content = _messageController.text;
+                final recipient = _recipientController.text;
+
                 final message = Message(
-                  content: _messageController.text,
-                  recipient: 'Team', // Placeholder for recipient
+                  content: content,
+                  recipient: recipient,
                 );
 
                 appProvider.addMessage(message);
-                _messageController.clear();
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Success'),
+                    content: Text('Message sent successfully!'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  ),
+                ).then((_) {
+                  // Clear text fields after saving
+                  _messageController.clear();
+                  _recipientController.clear();
+                });
               },
               child: Text('Send Message'),
             ),
@@ -528,11 +556,8 @@ class _CommunicateScreenState extends State<CommunicateScreen> {
                     margin: EdgeInsets.symmetric(vertical: 8),
                     elevation: 4,
                     child: ListTile(
-                      title: Text(
-                        message.recipient,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(message.content),
+                      title: Text(message.content, style: TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text('Recipient: ${message.recipient}'),
                     ),
                   );
                 },
@@ -543,10 +568,32 @@ class _CommunicateScreenState extends State<CommunicateScreen> {
       ),
     );
   }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String labelText,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: labelText,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        keyboardType: keyboardType,
+      ),
+    );
+  }
 }
 
 // Generate Reports
 class GenerateReportsScreen extends StatelessWidget {
+  final TextEditingController _reportController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final appProvider = Provider.of<AppProvider>(context);
@@ -560,6 +607,8 @@ class GenerateReportsScreen extends StatelessWidget {
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
+            _buildTextField(controller: _reportController, labelText: 'Report'),
+            SizedBox(height: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 primary: Colors.blue,
@@ -569,36 +618,70 @@ class GenerateReportsScreen extends StatelessWidget {
                 padding: EdgeInsets.symmetric(vertical: 12),
               ),
               onPressed: () {
-                final projects = appProvider.projects;
-                final reportContent = projects.map((p) =>
-                  'Project: ${p.name}\n'
-                  'Start Date: ${p.startDate}\n'
-                  'End Date: ${p.endDate}\n'
-                  'Budget: \$${p.budget}\n'
-                ).join('\n');
+                final content = _reportController.text;
 
+                final report = Report(content: content);
+
+                appProvider.addReport(report);
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text('Generated Report'),
-                    content: SingleChildScrollView(
-                      child: Text(reportContent),
-                    ),
-                    actions: <Widget>[
+                    title: Text('Success'),
+                    content: Text('Report generated successfully!'),
+                    actions: [
                       TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: Text('Close'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('OK'),
                       ),
                     ],
                   ),
-                );
+                ).then((_) {
+                  // Clear text fields after saving
+                  _reportController.clear();
+                });
               },
-              child: Text('Generate Project Report'),
+              child: Text('Generate Report'),
             ),
             SizedBox(height: 20),
-            // Add more report generation options here as needed
+            Expanded(
+              child: ListView.builder(
+                itemCount: appProvider.reports.length,
+                itemBuilder: (context, index) {
+                  final report = appProvider.reports[index];
+                  return Card(
+                    margin: EdgeInsets.symmetric(vertical: 8),
+                    elevation: 4,
+                    child: ListTile(
+                      title: Text(report.content, style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String labelText,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: labelText,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        keyboardType: keyboardType,
       ),
     );
   }
